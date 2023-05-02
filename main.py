@@ -116,7 +116,7 @@ def filter():
 
         feature_collection = FeatureCollection(markers)
 
-        with open("gnv_service_requests_map/static/data/markers.geojson", 'w') as f:
+        with open("static/data/markers.geojson", 'w') as f:
             dump(feature_collection, f)
 
         return render_template('filter.html', filter_route=filter_route, selected_words=filter_keywords, selected_years=filter_year, selected_months=filter_month, selected_types=filter_type, the_title="myGNV Service Requests Map")

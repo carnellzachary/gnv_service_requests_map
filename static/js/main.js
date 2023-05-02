@@ -89,6 +89,7 @@ fetch("static/data/markers.geojson")
             r_modal_element.querySelector(".modal-p").innerHTML = if_desc;
 
             request_modal.show();
+          }
         });
       }
     }).addTo(map);

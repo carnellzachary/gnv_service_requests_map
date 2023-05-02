@@ -35,7 +35,7 @@ fetch("static/data/markers.geojson")
     var geojsonLayer = L.geoJson(geojsonData, {
       pointToLayer: function(feature, latlng) {
         bounds.extend(latlng);
-        
+
         return markerClusters.addLayer(L.marker(latlng));
       },
       onEachFeature: function(feature, layer) {
@@ -151,13 +151,10 @@ document.addEventListener("DOMContentLoaded", function() {
     setTimeout(toggle_sidebar, 1900);
   }
 
-  // This is where you would fire the setTimeout for sidebar
-
-  // For sidebar dropdown functionality
+  // For sidebar dropdown functionality: https://bootstrap-menu.com/detail-sidebar-nav-collapse.html
   document.querySelectorAll('.sidebar .nav-link').forEach(function(element) {
 
     element.addEventListener('click', function(e) {
-
 
       let nextEl = element.nextElementSibling;
       let parentEl = element.parentElement;

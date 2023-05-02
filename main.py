@@ -3,7 +3,7 @@ test for a -MySQL- database connection on your hosted website
 both the database and this script must be on the same server
 requires PyMySQL, Flask-SQLAlchemy, Flask
 """
-
+import os
 import pymysql
 import json
 from geojson import Point, Feature, FeatureCollection, dump
@@ -17,21 +17,10 @@ db = SQLAlchemy()
 # create the app
 app = Flask(__name__)
 
-# make sure the database username, database password and
-# database name are correct
-username = 'zjcarnel_master'
-password = 'gUP43e7yJium'
-userpass = 'mysql+pymysql://' + username + ':' + password + '@'
-# keep this as is for a hosted website
-server  = 'zjcarnell.reclaim.hosting'
-# CHANGE to YOUR database name, with a slash added as shown
-dbname   = '/zjcarnel_gnv_service_requests'
-# there is no socket
+if not os.getenv("DATABASE_URL"):
+    raise RuntimeError("DATABASE_URL is not set")
 
-
-# CHANGE NOTHING BELOW
-# put them all together as a string that shows SQLAlchemy where the database is
-app.config['SQLALCHEMY_DATABASE_URI'] = userpass + server + dbname
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL")
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 

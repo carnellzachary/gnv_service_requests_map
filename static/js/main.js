@@ -35,7 +35,10 @@ fetch("static/data/markers.geojson")
     var geojsonLayer = L.geoJson(geojsonData, {
       pointToLayer: function(feature, latlng) {
         bounds.extend(latlng);
-
+        
+        return markerClusters.addLayer(L.marker(latlng));
+      },
+      onEachFeature: function(feature, layer) {
         var f = feature.properties;
         var r_modal_element = document.querySelector('#request-modal');
 
@@ -43,22 +46,16 @@ fetch("static/data/markers.geojson")
 
         var tooltip_content = "<strong>Type:</strong> " + f.request_type + "<br><strong>Date:</strong> " + dateFormat(f.request_date, "fullDate") + "<br><hr style='margin: 5px 0;'>" + desc_truncated + "<hr style='margin: 5px 0;'><em>Click marker for more details...</em>";
 
+        layer.bindPopup(tooltip_content);
 
-        return markerClusters.addLayer(L.marker(latlng)
-          .bindPopup(tooltip_content)
-          .on({
-            mouseover(e) {
-              this.openPopup();
-            },
-            mouseout(e) {
-              this.closePopup();
-            },
-          }));
-      },
-      onEachFeature: function(feature, layer) {
         layer.on({
+          mouseover: function(e) {
+            this.openPopup();
+          },
+          mouseout: function(e) {
+            this.closePopup();
+          },
           click: function(e) {
-            var f = feature.properties;
             var if_address = (f.address) ? f.address : "";
             var if_reporter_display = (f.reporter_display) ? f.reporter_display : "";
             var if_closed = (f.closed) ? format_datetime(f.closed) : "";

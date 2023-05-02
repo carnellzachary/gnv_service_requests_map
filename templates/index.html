@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<title>{{ the_title }}</title>
+
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" crossorigin="">
+	<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css">
+	<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css">
+
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+
+	<!-- For some reason, FontAwesome not working -->
+	<script src="https://kit.fontawesome.com/6defe0c464.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+
+	<div id="welcome-banner">
+		<button id="banner-close" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+  	<h5>myGNV Service Requests Map</h5>
+  	<p>A filterable map of thousands of Gainesville service requests going back to 2017</p>
+	</div>
+
+	<div class="container-fluid h-100">
+		<div class="row h-100">
+
+			<div class="sidebar-button-left-pos d-flex d-block" id="sidebar-toggle-btn"><i class="fa-solid fa-bars fa-2xl"></i></i></div>
+
+			<!-- Sidebar (Left) -->
+			<nav id="sidebar-container" class="sidebar-left-pos sidebar h-100 p-0 pb-3">
+				<form id="filter-form" method="POST" action="{{ url_for('filter') }}">
+					<div id="sidebar-header-container">
+						<h5 class='sidebar-header'>Filter Map</h5>
+						<input type="submit" class="btn btn-primary" value="Apply">
+					</div>
+					<ul id="sidebar-list" class="nav d-flex flex-column">
+						<li class="nav-item has-submenu">
+							<a class="nav-link filter-header" href="#">Keyword
+								<i class="filter-header-arrow fa-solid fa-caret-left fa-xl"></i>
+							</a>
+							<ul id="keyword_list" class="submenu collapse">
+								<li class="keyword_item_container">
+									<input type="text" id="keyword_toadd" placeholder="Filter description by...">
+									<div id="keyword_add" class="btn-success">+</div>
+								</li>
+								<input type="hidden" id="keyword_and_or_input" name="keyword_and_or_input" value="or">
+							</ul>
+						</li>
+						<li class="nav-item has-submenu">
+							<a class="nav-link filter-header" href="#">Type
+								<i class="filter-header-arrow fa-solid fa-caret-left fa-xl"></i>
+							</a>
+							<ul class="submenu collapse">
+
+								<li>
+									<input type="checkbox" id="types_select_all" onclick="inputs_select_all(this, 'type')" checked>
+									<label for="types_select_all"><strong>Select All</strong></label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="blocked_exits" name="type" value="Blocked Exits" checked>
+									<label for="blocked_exits">Blocked Exits</label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="building_abandoned_damaged" name="type" value="Building (Abandoned / Damaged)" checked>
+									<label for="building_abandoned_damaged">Building (Abandoned / Damaged)</label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="construction_sites" name="type" value="Construction Sites" checked>
+									<label for="construction_sites">Construction Sites</label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="dangerous_buildings" name="type" value="Dangerous Buildings" checked>
+									<label for="dangerous_buildings">Dangerous Buildings</label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="dead_animal" name="type" value="Dead Animal (Public Property)" checked>
+									<label for="dead_animal">Dead Animal (Public Property)</label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="ditch_drainage_flooding" name="type" value="Ditch / Drainage / Flooding" checked>
+									<label for="ditch_drainage_flooding">Ditch / Drainage / Flooding</label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="e-scooter_issues" name="type" value="e-Scooter Issues" checked>
+									<label for="e-scooter_issues">e-Scooter Issues</label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="emergency_flooding" name="type" value="Emergency - Flooding" checked>
+									<label for="emergency_flooding">Emergency - Flooding</label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="emergency_other" name="type" value="Emergency - Other" checked>
+									<label for="emergency_other">Emergency - Other</label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="emergency_traffic" name="type" value="Emergency - Traffic" checked>
+									<label for="emergency_traffic">Emergency - Traffic</label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="emergency_tree_or_brush_debris" name="type" value="Emergency - Tree or Brush Debris" checked>
+									<label for="emergency_tree_or_brush_debris">Emergency - Tree or Brush Debris</label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="fire_hydrant_issues" name="type" value="Fire Hydrant Issues" checked>
+									<label for="fire_hydrant_issues">Fire Hydrant Issues</label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="garbage_pick_up_recycling" name="type" value="Garbage Pick Up &amp; Recycling" checked>
+									<label for="garbage_pick_up_recycling">Garbage Pick Up &amp; Recycling</label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="general_code_issue" name="type" value="General Code Issue" checked>
+									<label for="general_code_issue">General Code Issue</label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="general_police_enforcement" name="type" value="General Police Enforcement" checked>
+									<label for="general_police_enforcement">General Police Enforcement</label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="graffiti" name="type" value="Graffiti" checked>
+									<label for="graffiti">Graffiti</label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="health_and_wellness_concerns" name="type" value="Health and Wellness Concerns" checked>
+									<label for="health_and_wellness_concerns">Health and Wellness Concerns</label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="holiday_displays" name="type" value="Holiday Displays" checked>
+									<label for="holiday_displays">Holiday Displays</label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="inspections" name="type" value="Inspections" checked>
+									<label for="inspections">Inspections</label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="leaks" name="type" value="Leaks" checked>
+									<label for="leaks">Leaks</label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="low_pressure" name="type" value="Low Pressure" checked>
+									<label for="low_pressure">Low Pressure</label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="mosquito_control" name="type" value="Mosquito Control" checked>
+									<label for="mosquito_control">Mosquito Control</label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="neighbor_assistance_clerk" name="type" value="Neighbor Assistance - Clerk" checked>
+									<label for="neighbor_assistance_clerk">Neighbor Assistance - Clerk</label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="neighborhood_watch_signs" name="type" value="Neighborhood Watch Signs" checked>
+									<label for="neighborhood_watch_signs">Neighborhood Watch Signs</label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="new_infrastructure" name="type" value="New Infrastructure" checked>
+									<label for="new_infrastructure">New Infrastructure</label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="noise_complaint" name="type" value="Noise Complaint" checked>
+									<label for="noise_complaint">Noise Complaint</label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="other" name="type" value="Other" checked>
+									<label for="other">Other</label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="overcrowding" name="type" value="Overcrowding" checked>
+									<label for="overcrowding">Overcrowding</label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="overgrown_grass" name="type" value="Overgrown Grass" checked>
+									<label for="overgrown_grass">Overgrown Grass</label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="park_repair_or_clean_up" name="type" value="Park Repair or Clean Up" checked>
+									<label for="park_repair_or_clean_up">Park Repair or Clean Up</label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="parking_enforcement" name="type" value="Parking Enforcement" checked>
+									<label for="parking_enforcement">Parking Enforcement</label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="parking_in_yard" name="type" value="Parking in Yard" checked>
+									<label for="parking_in_yard">Parking in Yard</label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="parking_meter_malfunction" name="type" value="Parking Meter Malfunction" checked>
+									<label for="parking_meter_malfunction">Parking Meter Malfunction</label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="request_for_new_signal" name="type" value="Request for New Signal" checked>
+									<label for="request_for_new_signal">Request for New Signal</label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="request_for_streetlight" name="type" value="Request for Streetlight" checked>
+									<label for="request_for_streetlight">Request for Streetlight</label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="request_to_general_manager_of_utilities" name="type" value="Request to General Manager of Utilities" checked>
+									<label for="request_to_general_manager_of_utilities">Request to General Manager of Utilities</label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="residential_rental_maintenance" name="type" value="Residential Rental Maintenance" checked>
+									<label for="residential_rental_maintenance">Residential Rental Maintenance</label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="right-of-way_maintenance" name="type" value="Right-of-Way Maintenance" checked>
+									<label for="right-of-way_maintenance">Right-of-Way Maintenance</label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="road_repair" name="type" value="Road Repair" checked>
+									<label for="road_repair">Road Repair</label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="sidewalk_repair" name="type" value="Sidewalk Repair" checked>
+									<label for="sidewalk_repair">Sidewalk Repair</label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="smoke_detector_installation" name="type" value="Smoke Detector Installation" checked>
+									<label for="smoke_detector_installation">Smoke Detector Installation</label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="street_sign" name="type" value="Street Sign" checked>
+									<label for="street_sign">Street Sign</label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="streetlight" name="type" value="Streetlight" checked>
+									<label for="streetlight">Streetlight</label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="substandard_rentals" name="type" value="Substandard Rentals" checked>
+									<label for="substandard_rentals">Substandard Rentals</label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="traffic_enforcement" name="type" value="Traffic Enforcement" checked>
+									<label for="traffic_enforcement">Traffic Enforcement</label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="traffic_pedestrian_signal" name="type" value="Traffic / Pedestrian Signal" checked>
+									<label for="traffic_pedestrian_signal">Traffic / Pedestrian Signal</label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="trash_debris" name="type" value="Trash / Debris" checked>
+									<label for="trash_debris">Trash / Debris</label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="tree_limbs" name="type" value="Tree / Limbs" checked>
+									<label for="tree_limbs">Tree / Limbs</label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="tree_blocking_street" name="type" value="Tree Blocking Street" checked>
+									<label for="tree_blocking_street">Tree Blocking Street</label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="tree_planting_suggestion" name="type" value="Tree Planting Suggestion" checked>
+									<label for="tree_planting_suggestion">Tree Planting Suggestion</label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="vehicle_abandoned" name="type" value="Vehicle (Abandoned / Non-Operational)" checked>
+									<label for="vehicle_abandoned">Vehicle (Abandoned / Non-Operational)</label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="wastewater_sewer" name="type" value="Wastewater / Sewer" checked>
+									<label for="wastewater_sewer">Wastewater / Sewer</label>
+								</li>
+
+							</ul>
+						</li>
+						<li class="nav-item has-submenu">
+							<a class="nav-link filter-header" href="#">Year
+								<i class="filter-header-arrow fa-solid fa-caret-left fa-xl"></i>
+							</a>
+							<ul class="submenu collapse">
+
+								<li>
+									<input type="checkbox" id="years_select_all" onclick="inputs_select_all(this, 'year')" checked>
+									<label for="years_select_all"><strong>Select All</strong></label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="seventeen" name="year" value="2017" checked>
+									<label for="seventeen">2017</label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="eighteen" name="year" value="2018" checked>
+									<label for="eighteen">2018</label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="nineteen" name="year" value="2019" checked>
+									<label for="nineteen">2019</label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="twenty" name="year" value="2020" checked>
+									<label for="twenty">2020</label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="twenty-one" name="year" value="2021" checked>
+									<label for="twenty-one">2021</label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="twenty-two" name="year" value="2022" checked>
+									<label for="twenty-two">2022</label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="twenty-three" name="year" value="2023" checked>
+									<label for="twenty-three">2023</label>
+								</li>
+
+							</ul>
+						</li>
+						<li class="nav-item has-submenu">
+							<a class="nav-link filter-header" href="#">Month
+								<i class="filter-header-arrow fa-solid fa-caret-left fa-xl"></i>
+							</a>
+							<ul class="submenu collapse">
+
+								<li>
+									<input type="checkbox" id="months_select_all" onclick="inputs_select_all(this, 'month')" checked>
+									<label for="months_select_all"><strong>Select All</strong></label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="january" name="month" value="January" checked>
+									<label for="january">January</label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="february" name="month" value="February" checked>
+									<label for="february">February</label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="march" name="month" value="March" checked>
+									<label for="march">March</label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="april" name="month" value="April" checked>
+									<label for="april">April</label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="may" name="month" value="May" checked>
+									<label for="may">May</label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="june" name="month" value="June" checked>
+									<label for="june">June</label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="july" name="month" value="July" checked>
+									<label for="july">July</label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="august" name="month" value="August" checked>
+									<label for="august">August</label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="september" name="month" value="September" checked>
+									<label for="september">September</label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="october" name="month" value="October" checked>
+									<label for="october">October</label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="november" name="month" value="November" checked>
+									<label for="november">November</label>
+								</li>
+
+								<li>
+									<input type="checkbox" id="december" name="month" value="December" checked>
+									<label for="december">December</label>
+								</li>
+
+							</ul>
+						</li>
+					</ul>
+				</form>
+			</nav>
+
+			<!-- Map (Right) -->
+			<main class="col-12 p-0">
+
+				<div id="map"></div>
+
+			</main>
+		</div>
+	</div>
+
+	<div id="request-modal" class="modal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+				<div class="modal-table"></div>
+				<p class="modal-p"></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+	<!-- Scripts -->
+	<script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/dateformat@3.0.3/lib/dateformat.js"></script>
+
+	<script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
+
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+	<!-- Load custom script -->
+	<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+</body>
+
+</html>

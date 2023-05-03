@@ -48,57 +48,89 @@ fetch("static/data/markers.geojson")
 
         var desc_truncated = (f.description && f.description !== 'None') ? truncate_string(f.description, 285) : "<em>No description reported.</em>";
 
+        var tooltip_content = "<strong>Type:</strong> " + f.request_type + "<br><strong>Date:</strong> " + dateFormat(f.request_date, "fullDate") + "<br><hr style='margin: 5px 0;'>" + desc_truncated + "<hr style='margin: 5px 0;'><em>Click marker for more details...</em>";
+
         // Attribution for detecting if user on mobile: Timothy Huang (https://dev.to/timhuang/a-simple-way-to-detect-if-browser-is-on-a-mobile-device-with-javascript-44j3)
         if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-          var tooltip_click_msg = '<span class="nav-link" onclick="open_request_modal()">Click here for more details...</span>';
+          var m = L.marker(latlng)
+            .on({
+              touchstart: function(e) {
+                var if_address = (f.address) ? f.address : "";
+                var if_reporter_display = (f.reporter_display) ? f.reporter_display : "";
+                var if_closed = (f.closed) ? format_datetime(f.closed) : "";
+                var if_status = (f.status) ? f.status : "";
+                var if_assigned_to = (f.assigned_to) ? f.assigned_to : "";
+                var if_desc = (f.description) ? f.description : "<em>No description reported.</em>";
+                // var sharable_link = '{{ url_for('detail') }}' + f.ID;
+
+                // Days-Minutes to Close
+                if (f.minutes_to_close && f.days_to_close) {
+                  var days = (f.days_to_close == 1) ? f.days_to_close + " Day" : f.days_to_close + " Days";
+                  var minutes = (f.minutes_to_close == 1) ? f.minutes_to_close + " Minute" : f.minutes_to_close + " Minutes";
+                } else {
+                  var days = '';
+                  var months = '';
+                }
+
+                var if_time_closed = (f.minutes_to_close && f.days_to_close) ? "<tr><th>Days / Minutes to Close</th><td>" + days + " / " + minutes + "</td></tr>" : "";
+
+                // Date Acknowledged
+                var if_ack = (f.acknowledged) ? format_datetime(f.acknowledged) : "";
+
+                var table_content = "<table class='table table-striped table-bordered table-condensed'>" + "<tr><th>ID</th><td>" + f.id + "</td></tr>" + "<tr><th>Request Type</th><td>" + f.request_type + "</td></tr>" + "<tr><th>Reporter Display Name</th><td>" + if_reporter_display + "</td></tr>" + "<tr><th>Address</th><td>" + if_address + "</td></tr>" + "<tr><th>Latitude</th><td>" + feature.geometry.coordinates[1].toString() + "</td></tr>" + "<tr><th>Longitude</th><td>" + feature.geometry.coordinates[0].toString() + "</td></tr>" + "<tr><th>Date Reported</th><td>" + dateFormat(f.request_date, "fullDate") + "</td></tr>" + "<tr><th>Date Acknowledged</th><td>" + if_ack + "</td></tr>" + "<tr><th>Assigned To</th><td>" + if_assigned_to + "</td></tr>" + "<tr><th>Last Updated</th><td>" + format_datetime(f.last_updated) + "</td></tr>" + "<tr><th>Status</th><td>" + if_status + "</td></tr>" + "<tr><th>Date Closed</th><td>" + if_closed + "</td></tr>" + if_time_closed + "</table>";
+
+                $('#request-modal').find('.modal-table').html(table_content); // I use jQuery here to just quickly format table_content string to html. I already have to load jQuery to load parts of Bootstrap anyway
+
+                r_modal_element.querySelector(".modal-title").innerHTML = "Gainesville Service Request - " + f.request_type;
+                r_modal_element.querySelector(".modal-p").innerHTML = if_desc;
+
+                request_modal.show();
+              },
+            });
         } else {
-          var tooltip_click_msg = 'Click marker for more details...';
+          var m = L.marker(latlng)
+            .bindPopup(tooltip_content)
+            .on({
+              click: function(e) {
+                var if_address = (f.address) ? f.address : "";
+                var if_reporter_display = (f.reporter_display) ? f.reporter_display : "";
+                var if_closed = (f.closed) ? format_datetime(f.closed) : "";
+                var if_status = (f.status) ? f.status : "";
+                var if_assigned_to = (f.assigned_to) ? f.assigned_to : "";
+                var if_desc = (f.description) ? f.description : "<em>No description reported.</em>";
+                // var sharable_link = '{{ url_for('detail') }}' + f.ID;
+
+                // Days-Minutes to Close
+                if (f.minutes_to_close && f.days_to_close) {
+                  var days = (f.days_to_close == 1) ? f.days_to_close + " Day" : f.days_to_close + " Days";
+                  var minutes = (f.minutes_to_close == 1) ? f.minutes_to_close + " Minute" : f.minutes_to_close + " Minutes";
+                } else {
+                  var days = '';
+                  var months = '';
+                }
+
+                var if_time_closed = (f.minutes_to_close && f.days_to_close) ? "<tr><th>Days / Minutes to Close</th><td>" + days + " / " + minutes + "</td></tr>" : "";
+
+                // Date Acknowledged
+                var if_ack = (f.acknowledged) ? format_datetime(f.acknowledged) : "";
+
+                var table_content = "<table class='table table-striped table-bordered table-condensed'>" + "<tr><th>ID</th><td>" + f.id + "</td></tr>" + "<tr><th>Request Type</th><td>" + f.request_type + "</td></tr>" + "<tr><th>Reporter Display Name</th><td>" + if_reporter_display + "</td></tr>" + "<tr><th>Address</th><td>" + if_address + "</td></tr>" + "<tr><th>Latitude</th><td>" + feature.geometry.coordinates[1].toString() + "</td></tr>" + "<tr><th>Longitude</th><td>" + feature.geometry.coordinates[0].toString() + "</td></tr>" + "<tr><th>Date Reported</th><td>" + dateFormat(f.request_date, "fullDate") + "</td></tr>" + "<tr><th>Date Acknowledged</th><td>" + if_ack + "</td></tr>" + "<tr><th>Assigned To</th><td>" + if_assigned_to + "</td></tr>" + "<tr><th>Last Updated</th><td>" + format_datetime(f.last_updated) + "</td></tr>" + "<tr><th>Status</th><td>" + if_status + "</td></tr>" + "<tr><th>Date Closed</th><td>" + if_closed + "</td></tr>" + if_time_closed + "</table>";
+
+                $('#request-modal').find('.modal-table').html(table_content); // I use jQuery here to just quickly format table_content string to html. I already have to load jQuery to load parts of Bootstrap anyway
+
+                r_modal_element.querySelector(".modal-title").innerHTML = "Gainesville Service Request - " + f.request_type;
+                r_modal_element.querySelector(".modal-p").innerHTML = if_desc;
+
+                request_modal.show();
+              },
+              mouseover: function(e) {
+                this.openPopup();
+              },
+              mouseout: function(e) {
+                this.closePopup();
+              },
+            });
         }
-
-        var tooltip_content = "<strong>Type:</strong> " + f.request_type + "<br><strong>Date:</strong> " + dateFormat(f.request_date, "fullDate") + "<br><hr style='margin: 5px 0;'>" + desc_truncated + "<hr style='margin: 5px 0;'><em>" + tooltip_click_msg + "</em>";
-
-        var m = L.marker(latlng)
-          .bindPopup(tooltip_content)
-          .on({
-            click: function(e) {
-              var if_address = (f.address) ? f.address : "";
-              var if_reporter_display = (f.reporter_display) ? f.reporter_display : "";
-              var if_closed = (f.closed) ? format_datetime(f.closed) : "";
-              var if_status = (f.status) ? f.status : "";
-              var if_assigned_to = (f.assigned_to) ? f.assigned_to : "";
-              var if_desc = (f.description) ? f.description : "<em>No description reported.</em>";
-              // var sharable_link = '{{ url_for('detail') }}' + f.ID;
-
-              // Days-Minutes to Close
-              if (f.minutes_to_close && f.days_to_close) {
-                var days = (f.days_to_close == 1) ? f.days_to_close + " Day" : f.days_to_close + " Days";
-                var minutes = (f.minutes_to_close == 1) ? f.minutes_to_close + " Minute" : f.minutes_to_close + " Minutes";
-              } else {
-                var days = '';
-                var months = '';
-              }
-
-              var if_time_closed = (f.minutes_to_close && f.days_to_close) ? "<tr><th>Days / Minutes to Close</th><td>" + days + " / " + minutes + "</td></tr>" : "";
-
-              // Date Acknowledged
-              var if_ack = (f.acknowledged) ? format_datetime(f.acknowledged) : "";
-
-              var table_content = "<table class='table table-striped table-bordered table-condensed'>" + "<tr><th>ID</th><td>" + f.id + "</td></tr>" + "<tr><th>Request Type</th><td>" + f.request_type + "</td></tr>" + "<tr><th>Reporter Display Name</th><td>" + if_reporter_display + "</td></tr>" + "<tr><th>Address</th><td>" + if_address + "</td></tr>" + "<tr><th>Latitude</th><td>" + feature.geometry.coordinates[1].toString() + "</td></tr>" + "<tr><th>Longitude</th><td>" + feature.geometry.coordinates[0].toString() + "</td></tr>" + "<tr><th>Date Reported</th><td>" + dateFormat(f.request_date, "fullDate") + "</td></tr>" + "<tr><th>Date Acknowledged</th><td>" + if_ack + "</td></tr>" + "<tr><th>Assigned To</th><td>" + if_assigned_to + "</td></tr>" + "<tr><th>Last Updated</th><td>" + format_datetime(f.last_updated) + "</td></tr>" + "<tr><th>Status</th><td>" + if_status + "</td></tr>" + "<tr><th>Date Closed</th><td>" + if_closed + "</td></tr>" + if_time_closed + "</table>";
-
-              $('#request-modal').find('.modal-table').html(table_content); // I use jQuery here to just quickly format table_content string to html. I already have to load jQuery to load parts of Bootstrap anyway
-
-              r_modal_element.querySelector(".modal-title").innerHTML = "Gainesville Service Request - " + f.request_type;
-              r_modal_element.querySelector(".modal-p").innerHTML = if_desc;
-
-              request_modal.show();
-            },
-            mouseover: function(e) {
-              this.openPopup();
-            },
-            mouseout: function(e) {
-              this.closePopup();
-            },
-          });
 
         return markerClusters.addLayer(m);
       },
@@ -113,8 +145,8 @@ fetch("static/data/markers.geojson")
   });
 
 // Attribution: David Thomas on stackoverflow (https://stackoverflow.com/questions/19480385/css-hover-can-it-effect-multiple-divs-with-same-class-name)
-function classToggle(evt, find, toggle) {
-  [].forEach.call(document.querySelectorAll('.' + find), function(a) {
+function classToggle(evt, parent, child, toggle) {
+  [].forEach.call(document.querySelector(parent).querySelectorAll(child), function(a) {
     a.classList[evt.type === 'mouseover' ? 'add' : 'remove'](toggle);
   });
 }
@@ -239,10 +271,10 @@ document.addEventListener("DOMContentLoaded", function() {
         keyword_and_or.setAttribute('class', 'keyword_and_or');
         keyword_and_or.innerHTML = document.querySelector('#keyword_and_or_input').value;
         keyword_and_or.addEventListener('mouseover', function(evt) {
-          classToggle(evt, 'keyword_and_or', 'keyword_and_or_hover');
+          classToggle(evt, '#sidebar-list', '.keyword_and_or', 'keyword_and_or_hover');
         });
         keyword_and_or.addEventListener('mouseout', function(evt) {
-          classToggle(evt, 'keyword_and_or', 'keyword_and_or_hover');
+          classToggle(evt, '#sidebar-list', 'keyword_and_or', 'keyword_and_or_hover');
         });
         keyword_and_or.addEventListener('click', function(evt) {
           toggle_keyword_and_or();

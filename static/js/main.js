@@ -52,9 +52,9 @@ fetch("static/data/markers.geojson")
 
         // Attribution for detecting if user on mobile: Timothy Huang (https://dev.to/timhuang/a-simple-way-to-detect-if-browser-is-on-a-mobile-device-with-javascript-44j3)
         if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-          var m = L.marker(latlng)
+          var m = L.marker(latlng);
             .on({
-              touchstart: function(e) {
+              click: function(e) {
                 var if_address = (f.address) ? f.address : "";
                 var if_reporter_display = (f.reporter_display) ? f.reporter_display : "";
                 var if_closed = (f.closed) ? format_datetime(f.closed) : "";
@@ -88,7 +88,7 @@ fetch("static/data/markers.geojson")
               },
             });
         } else {
-          var m = L.marker(latlng)
+          var m = L.marker(latlng);
             .bindPopup(tooltip_content)
             .on({
               click: function(e) {

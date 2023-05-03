@@ -35,7 +35,7 @@ html,body {
 
 #welcome-banner p {
   font-weight: bold;
-  text-shadow: #FFF 0 0 5px;
+  text-shadow: #FFF 1px 0 3px;
   color: #000;
   margin: 0.3rem;
 }
@@ -63,7 +63,7 @@ html,body {
   bottom: 0;
   z-index: 899;
   transition: left 1.02s;
-  box-shadow: 0 0 15px rgba(0,0,0,0.5) !important;
+  box-shadow: 0 0 15px rgba(0,0,0,0.7) !important;
   overflow-y: scroll;
   background: #f8f9fa;
   -webkit-user-select: none;
@@ -71,17 +71,15 @@ html,body {
   user-select: none;
 }
 
-#sidebar-toggle-btn {
+.sidebar-toggle-btn {
   width: 2.6rem;
   height: 2.6rem;
   background: #f2f2f2;
   color: #1e3050;
   border: 0.5px solid #1e3050;
-  position: absolute;
-  left: 232px;
-  bottom: 7px;
-  border-radius: 5px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+  border-radius: 50%;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.8);
+  display: flex;
   justify-content: center;
   align-items: center;
   z-index: 900;
@@ -89,8 +87,20 @@ html,body {
   cursor: pointer;
 }
 
-#sidebar-toggle-btn:active {
-  transform: scale(0.93);
+.sidebar-toggle-btn:active {
+  transform: scale(0.90);
+}
+
+#about-toggle-btn {
+  position: absolute;
+  left: 232px;
+  bottom: 7px;
+}
+
+#sidebar-toggle-btn {
+  position: absolute;
+  left: 232px;
+  bottom: 56px;
 }
 
 #sidebar-container {

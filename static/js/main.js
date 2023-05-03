@@ -1,3 +1,4 @@
+var about_modal = new bootstrap.Modal(document.getElementById("about-modal"), {});
 var request_modal = new bootstrap.Modal(document.getElementById("request-modal"), {});
 
 var map = L.map("map", {
@@ -36,9 +37,6 @@ fetch("static/data/markers.geojson")
       pointToLayer: function(feature, latlng) {
         bounds.extend(latlng);
 
-        return markerClusters.addLayer(L.marker(latlng));
-      },
-      onEachFeature: function(feature, layer) {
         var f = feature.properties;
         var r_modal_element = document.querySelector('#request-modal');
 
@@ -46,86 +44,49 @@ fetch("static/data/markers.geojson")
 
         var tooltip_content = "<strong>Type:</strong> " + f.request_type + "<br><strong>Date:</strong> " + dateFormat(f.request_date, "fullDate") + "<br><hr style='margin: 5px 0;'>" + desc_truncated + "<hr style='margin: 5px 0;'><em>Click marker for more details...</em>";
 
-        if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-          layer.on({
-            click: function(e) {
-              var if_address = (f.address) ? f.address : "";
-              var if_reporter_display = (f.reporter_display) ? f.reporter_display : "";
-              var if_closed = (f.closed) ? format_datetime(f.closed) : "";
-              var if_status = (f.status) ? f.status : "";
-              var if_assigned_to = (f.assigned_to) ? f.assigned_to : "";
-              var if_desc = (f.description) ? f.description : "<em>No description reported.</em>";
-              // var sharable_link = '{{ url_for('detail') }}' + f.ID;
+        return markerClusters.addLayer(L.marker(latlng)
+              .bindPopup(tooltip_content)
+              .on({
+                click: function(e) {
+                  var if_address = (f.address) ? f.address : "";
+                  var if_reporter_display = (f.reporter_display) ? f.reporter_display : "";
+                  var if_closed = (f.closed) ? format_datetime(f.closed) : "";
+                  var if_status = (f.status) ? f.status : "";
+                  var if_assigned_to = (f.assigned_to) ? f.assigned_to : "";
+                  var if_desc = (f.description) ? f.description : "<em>No description reported.</em>";
+                  // var sharable_link = '{{ url_for('detail') }}' + f.ID;
 
-              // Days-Minutes to Close
-              if (f.minutes_to_close && f.days_to_close) {
-                var days = (f.days_to_close == 1) ? f.days_to_close + " Day" : f.days_to_close + " Days";
-                var minutes = (f.minutes_to_close == 1) ? f.minutes_to_close + " Minute" : f.minutes_to_close + " Minutes";
-              } else {
-                var days = '';
-                var months = '';
-              }
+                  // Days-Minutes to Close
+                  if (f.minutes_to_close && f.days_to_close) {
+                    var days = (f.days_to_close == 1) ? f.days_to_close + " Day" : f.days_to_close + " Days";
+                    var minutes = (f.minutes_to_close == 1) ? f.minutes_to_close + " Minute" : f.minutes_to_close + " Minutes";
+                  } else {
+                    var days = '';
+                    var months = '';
+                  }
 
-              var if_time_closed = (f.minutes_to_close && f.days_to_close) ? "<tr><th>Days / Minutes to Close</th><td>" + days + " / " + minutes + "</td></tr>" : "";
+                  var if_time_closed = (f.minutes_to_close && f.days_to_close) ? "<tr><th>Days / Minutes to Close</th><td>" + days + " / " + minutes + "</td></tr>" : "";
 
-              // Date Acknowledged
-              var if_ack = (f.acknowledged) ? format_datetime(f.acknowledged) : "";
+                  // Date Acknowledged
+                  var if_ack = (f.acknowledged) ? format_datetime(f.acknowledged) : "";
 
-              var table_content = "<table class='table table-striped table-bordered table-condensed'>" + "<tr><th>ID</th><td>" + f.id + "</td></tr>" + "<tr><th>Request Type</th><td>" + f.request_type + "</td></tr>" + "<tr><th>Reporter Display Name</th><td>" + if_reporter_display + "</td></tr>" + "<tr><th>Address</th><td>" + if_address + "</td></tr>" + "<tr><th>Latitude</th><td>" + feature.geometry.coordinates[1].toString() + "</td></tr>" + "<tr><th>Longitude</th><td>" + feature.geometry.coordinates[0].toString() + "</td></tr>" + "<tr><th>Date Reported</th><td>" + dateFormat(f.request_date, "fullDate") + "</td></tr>" + "<tr><th>Date Acknowledged</th><td>" + if_ack + "</td></tr>" + "<tr><th>Assigned To</th><td>" + if_assigned_to + "</td></tr>" + "<tr><th>Last Updated</th><td>" + format_datetime(f.last_updated) + "</td></tr>" + "<tr><th>Status</th><td>" + if_status + "</td></tr>" + "<tr><th>Date Closed</th><td>" + if_closed + "</td></tr>" + if_time_closed + "</table>";
+                  var table_content = "<table class='table table-striped table-bordered table-condensed'>" + "<tr><th>ID</th><td>" + f.id + "</td></tr>" + "<tr><th>Request Type</th><td>" + f.request_type + "</td></tr>" + "<tr><th>Reporter Display Name</th><td>" + if_reporter_display + "</td></tr>" + "<tr><th>Address</th><td>" + if_address + "</td></tr>" + "<tr><th>Latitude</th><td>" + feature.geometry.coordinates[1].toString() + "</td></tr>" + "<tr><th>Longitude</th><td>" + feature.geometry.coordinates[0].toString() + "</td></tr>" + "<tr><th>Date Reported</th><td>" + dateFormat(f.request_date, "fullDate") + "</td></tr>" + "<tr><th>Date Acknowledged</th><td>" + if_ack + "</td></tr>" + "<tr><th>Assigned To</th><td>" + if_assigned_to + "</td></tr>" + "<tr><th>Last Updated</th><td>" + format_datetime(f.last_updated) + "</td></tr>" + "<tr><th>Status</th><td>" + if_status + "</td></tr>" + "<tr><th>Date Closed</th><td>" + if_closed + "</td></tr>" + if_time_closed + "</table>";
 
-              $('#request-modal').find('.modal-table').html(table_content); // I use jQuery here to just quickly format table_content string to html. I already have to load jQuery to load parts of Bootstrap anyway
+                  $('#request-modal').find('.modal-table').html(table_content); // I use jQuery here to just quickly format table_content string to html. I already have to load jQuery to load parts of Bootstrap anyway
 
-              r_modal_element.querySelector(".modal-title").innerHTML = "Gainesville Service Request - " + f.request_type;
-              r_modal_element.querySelector(".modal-p").innerHTML = if_desc;
+                  r_modal_element.querySelector(".modal-title").innerHTML = "Gainesville Service Request - " + f.request_type;
+                  r_modal_element.querySelector(".modal-p").innerHTML = if_desc;
 
-              request_modal.show();
-            }
-          });
-        } else {
-          layer.bindPopup(tooltip_content);
-
-          layer.on({
-            mouseover: function(e) {
-              this.openPopup();
-            },
-            mouseout: function(e) {
-              this.closePopup();
-            },
-            click: function(e) {
-              var if_address = (f.address) ? f.address : "";
-              var if_reporter_display = (f.reporter_display) ? f.reporter_display : "";
-              var if_closed = (f.closed) ? format_datetime(f.closed) : "";
-              var if_status = (f.status) ? f.status : "";
-              var if_assigned_to = (f.assigned_to) ? f.assigned_to : "";
-              var if_desc = (f.description) ? f.description : "<em>No description reported.</em>";
-              // var sharable_link = '{{ url_for('detail') }}' + f.ID;
-
-              // Days-Minutes to Close
-              if (f.minutes_to_close && f.days_to_close) {
-                var days = (f.days_to_close == 1) ? f.days_to_close + " Day" : f.days_to_close + " Days";
-                var minutes = (f.minutes_to_close == 1) ? f.minutes_to_close + " Minute" : f.minutes_to_close + " Minutes";
-              } else {
-                var days = '';
-                var months = '';
-              }
-
-              var if_time_closed = (f.minutes_to_close && f.days_to_close) ? "<tr><th>Days / Minutes to Close</th><td>" + days + " / " + minutes + "</td></tr>" : "";
-
-              // Date Acknowledged
-              var if_ack = (f.acknowledged) ? format_datetime(f.acknowledged) : "";
-
-              var table_content = "<table class='table table-striped table-bordered table-condensed'>" + "<tr><th>ID</th><td>" + f.id + "</td></tr>" + "<tr><th>Request Type</th><td>" + f.request_type + "</td></tr>" + "<tr><th>Reporter Display Name</th><td>" + if_reporter_display + "</td></tr>" + "<tr><th>Address</th><td>" + if_address + "</td></tr>" + "<tr><th>Latitude</th><td>" + feature.geometry.coordinates[1].toString() + "</td></tr>" + "<tr><th>Longitude</th><td>" + feature.geometry.coordinates[0].toString() + "</td></tr>" + "<tr><th>Date Reported</th><td>" + dateFormat(f.request_date, "fullDate") + "</td></tr>" + "<tr><th>Date Acknowledged</th><td>" + if_ack + "</td></tr>" + "<tr><th>Assigned To</th><td>" + if_assigned_to + "</td></tr>" + "<tr><th>Last Updated</th><td>" + format_datetime(f.last_updated) + "</td></tr>" + "<tr><th>Status</th><td>" + if_status + "</td></tr>" + "<tr><th>Date Closed</th><td>" + if_closed + "</td></tr>" + if_time_closed + "</table>";
-
-              $('#request-modal').find('.modal-table').html(table_content); // I use jQuery here to just quickly format table_content string to html. I already have to load jQuery to load parts of Bootstrap anyway
-
-              r_modal_element.querySelector(".modal-title").innerHTML = "Gainesville Service Request - " + f.request_type;
-              r_modal_element.querySelector(".modal-p").innerHTML = if_desc;
-
-              request_modal.show();
-            }
-          });
-        }
-      }
+                  request_modal.show();
+                },
+                mouseover: function(e) {
+                  this.openPopup();
+                },
+                mouseout: function(e) {
+                  this.closePopup();
+                },
+            }));
+      },
     }).addTo(map);
 
     if (bounds.length > 0) {
@@ -169,6 +130,7 @@ function inputs_select_all(el, tag) {
 }
 
 function toggle_sidebar() {
+  document.querySelector('#about-toggle-btn').classList.toggle('sidebar-button-left-pos');
   document.querySelector('#sidebar-toggle-btn').classList.toggle('sidebar-button-left-pos');
   document.querySelector('#sidebar-container').classList.toggle('sidebar-left-pos');
 }
@@ -182,13 +144,17 @@ document.addEventListener("DOMContentLoaded", function() {
 
   // For sidebar toggle
   document.querySelector('#sidebar-toggle-btn').addEventListener('click', function(e) {
+    document.querySelector('#about-toggle-btn').classList.toggle('sidebar-button-left-pos');
     document.querySelector('#sidebar-toggle-btn').classList.toggle('sidebar-button-left-pos');
     document.querySelector('#sidebar-container').classList.toggle('sidebar-left-pos');
   });
 
-  if (document.body.clientWidth >= 767) {
-    setTimeout(toggle_sidebar, 1900);
-  }
+  setTimeout(toggle_sidebar, 1900);
+
+  // For about modal toggle
+  document.querySelector('#about-toggle-btn').addEventListener('click', function(e) {
+    about_modal.show();
+  });
 
   // For sidebar dropdown functionality: https://bootstrap-menu.com/detail-sidebar-nav-collapse.html
   document.querySelectorAll('.sidebar .nav-link').forEach(function(element) {

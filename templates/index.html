@@ -4,9 +4,9 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+	<meta name="mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-capable" content="yes">
 
 	<title>{{ the_title }}</title>
 
@@ -27,14 +27,15 @@
 
 	<div id="welcome-banner">
 		<button id="banner-close" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-  	<h5>myGNV Service Requests Map</h5>
-  	<p>A filterable map of thousands of Gainesville service requests going back to 2017 (<a href="https://github.com/carnellzachary/gnv_service_requests_map">Repo</a>)</p>
+		<h5>myGNV Service Requests Map</h5>
+		<p>A filterable map of thousands of Gainesville service requests going back to 2017</p>
 	</div>
 
 	<div class="container-fluid h-100">
 		<div class="row h-100">
 
-			<div class="sidebar-button-left-pos d-flex d-block" id="sidebar-toggle-btn"><i class="fa-solid fa-bars fa-2xl"></i></div>
+			<div class="sidebar-toggle-btn sidebar-button-left-pos" id="about-toggle-btn"><i class="fa-regular fa-circle-info fa-2xl"></i></div>
+			<div class="sidebar-toggle-btn sidebar-button-left-pos" id="sidebar-toggle-btn"><i class="fa-sharp fa-solid fa-filter-list fa-lg"></i></div>
 
 			<!-- Sidebar (Left) -->
 			<nav id="sidebar-container" class="sidebar-left-pos sidebar h-100 p-0 pb-3">
@@ -463,29 +464,84 @@
 		</div>
 	</div>
 
-	<div id="request-modal" class="modal" tabindex="-1">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title"></h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-				<div class="modal-table"></div>
-				<p class="modal-p"></p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-      </div>
-    </div>
-  </div>
-</div>
+	<div id="request-modal" class="modal fade" tabindex="-1">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title"></h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<div class="modal-table"></div>
+					<p class="modal-p"></p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div id="about-modal" class="modal fade" tabindex="-1">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Welcome to the myGNV Service Requests Map!</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<ul class="nav nav-pills nav-justified" role="tablist">
+						<li class="nav-item" role="presentation">
+							<button class="nav-link active" id="about-tab" data-bs-toggle="tab" data-bs-target="#about-pane" type="button" role="tab" aria-controls="about-pane" aria-selected="true">About</button>
+						</li>
+						<li class="nav-item" role="tab">
+							<button class="nav-link" id="method-tab" data-bs-toggle="tab" data-bs-target="#method-pane" type="button" role="tab" aria-controls="method-pane" aria-selected="false">Methodology</button>
+						</li>
+					</ul>
+					<br>
+					<div class="tab-content">
+						<p class="tab-pane fade show active modal-p" id="about-pane" role="tabpanel" aria-labelledby="about-tab">
+							The myGNV Service Requests Map enables users to explore a filterable map of thousands of local service requests from citizens of Gainesville, Florida, going back to 2017.
+							<br>
+							<br>
+							These are 3-1-1 (non-emergency) service requests relating to general issues of everyday city-living, such as road maintenance or a noise complaint.
+							<br>
+							<br>
+							You can filter the map by using the sidebar on the leftside of the page, which can be toggled by the <i class="fa-regular fa-circle-info fa-sm"></i> icon at the bottom. Specifically, you can filter the map by the type of request, the year/month of a request, and keywords
+							in
+							a request description.
+							<br>
+							<br>
+							The and/or specification allows you to be more specfic when filtering by two or more keywords. If 'and' is selected, request descriptions will be filtered by whether they include <em>all</em> of the specified keywords. Conversely, if
+							'or'
+							is selected, descriptions will be filtered by whether they include <em>any</em> of the specified keywords. In other words, <em>or</em> means <em>more</em> markers will pass through the filter.
+						</p>
+						<p class="tab-pane fade modal-p" id="method-pane" role="tabpanel" aria-labelledby="method-tab">
+							This web application was created by Zachary Carnell, a student journalist at the University of Florida.
+							<br>
+							<br>
+							It uses a combination of multiple Python libraries, including Flask, PyMySQL, and SQLAlchemy, to facilitate a connection between the front end and a MySQL database on the back end. When a user applies a filter, the Flask application queries the database using the specified filters and generates a geojson file, which is then handled by a JavaScript mapping plugin called Leaflet.
+							<br>
+							<br>
+							This allows for minimal clientside processing: Instead of needlesssly forcing a user to load a giant geojson file of all the map data (for what may be a relatively small map filter), the Flask application allows for only the desired data to be loaded.
+							<br>
+							<br>
+							The service requests are <a href="https://data.cityofgainesville.org/Public-Administration-Finance/311-Service-Requests-myGNV-/78uv-94ar">made public</a> by the City of Gainesville and serve as the basis for the map data. And the underlying code for this application can be found on <a href="https://github.com/carnellzachary/gnv_service_requests_map">Github</a>.
+						</p>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
 
 
 	<!-- Scripts -->
 	<script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
 
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/dateformat@3.0.3/lib/dateformat.js"></script>
+	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/dateformat@3.0.3/lib/dateformat.js"></script>
 
 	<script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
 

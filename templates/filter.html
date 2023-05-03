@@ -605,10 +605,10 @@
 							keyword_and_or.setAttribute('class', 'keyword_and_or');
 							keyword_and_or.innerHTML = document.querySelector('#keyword_and_or_input').value;
 							keyword_and_or.addEventListener('mouseover', function(evt) {
-								classToggle(evt, 'keyword_and_or', 'keyword_and_or_hover');
+								classToggle(evt, '#sidebar-list', '.keyword_and_or', 'keyword_and_or_hover');
 							});
 							keyword_and_or.addEventListener('mouseout', function(evt) {
-								classToggle(evt, 'keyword_and_or', 'keyword_and_or_hover');
+								classToggle(evt, '#sidebar-list', '.keyword_and_or', 'keyword_and_or_hover');
 							});
 							keyword_and_or.addEventListener('click', function(evt) {
 								toggle_keyword_and_or();

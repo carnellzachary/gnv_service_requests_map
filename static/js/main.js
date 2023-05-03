@@ -247,7 +247,7 @@ document.addEventListener("DOMContentLoaded", function() {
           classToggle(evt, '#sidebar-list', '.keyword_and_or', 'keyword_and_or_hover');
         });
         keyword_and_or.addEventListener('mouseout', function(evt) {
-          classToggle(evt, '#sidebar-list', 'keyword_and_or', 'keyword_and_or_hover');
+          classToggle(evt, '#sidebar-list', '.keyword_and_or', 'keyword_and_or_hover');
         });
         keyword_and_or.addEventListener('click', function(evt) {
           toggle_keyword_and_or();

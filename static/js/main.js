@@ -93,41 +93,7 @@ fetch("static/data/markers.geojson")
               request_modal.show();
             },
             mouseover: function(e) {
-              // Attribution for detecting if user on mobile: Timothy Huang (https://dev.to/timhuang/a-simple-way-to-detect-if-browser-is-on-a-mobile-device-with-javascript-44j3)
-              if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-              var if_address = (f.address) ? f.address : "";
-              var if_reporter_display = (f.reporter_display) ? f.reporter_display : "";
-              var if_closed = (f.closed) ? format_datetime(f.closed) : "";
-              var if_status = (f.status) ? f.status : "";
-              var if_assigned_to = (f.assigned_to) ? f.assigned_to : "";
-              var if_desc = (f.description) ? f.description : "<em>No description reported.</em>";
-              // var sharable_link = '{{ url_for('detail') }}' + f.ID;
-
-              // Days-Minutes to Close
-              if (f.minutes_to_close && f.days_to_close) {
-                var days = (f.days_to_close == 1) ? f.days_to_close + " Day" : f.days_to_close + " Days";
-                var minutes = (f.minutes_to_close == 1) ? f.minutes_to_close + " Minute" : f.minutes_to_close + " Minutes";
-              } else {
-                var days = '';
-                var months = '';
-              }
-
-              var if_time_closed = (f.minutes_to_close && f.days_to_close) ? "<tr><th>Days / Minutes to Close</th><td>" + days + " / " + minutes + "</td></tr>" : "";
-
-              // Date Acknowledged
-              var if_ack = (f.acknowledged) ? format_datetime(f.acknowledged) : "";
-
-              var table_content = "<table class='table table-striped table-bordered table-condensed'>" + "<tr><th>ID</th><td>" + f.id + "</td></tr>" + "<tr><th>Request Type</th><td>" + f.request_type + "</td></tr>" + "<tr><th>Reporter Display Name</th><td>" + if_reporter_display + "</td></tr>" + "<tr><th>Address</th><td>" + if_address + "</td></tr>" + "<tr><th>Latitude</th><td>" + feature.geometry.coordinates[1].toString() + "</td></tr>" + "<tr><th>Longitude</th><td>" + feature.geometry.coordinates[0].toString() + "</td></tr>" + "<tr><th>Date Reported</th><td>" + dateFormat(f.request_date, "fullDate") + "</td></tr>" + "<tr><th>Date Acknowledged</th><td>" + if_ack + "</td></tr>" + "<tr><th>Assigned To</th><td>" + if_assigned_to + "</td></tr>" + "<tr><th>Last Updated</th><td>" + format_datetime(f.last_updated) + "</td></tr>" + "<tr><th>Status</th><td>" + if_status + "</td></tr>" + "<tr><th>Date Closed</th><td>" + if_closed + "</td></tr>" + if_time_closed + "</table>";
-
-              $('#request-modal').find('.modal-table').html(table_content); // I use jQuery here to just quickly format table_content string to html. I already have to load jQuery to load parts of Bootstrap anyway
-
-              r_modal_element.querySelector(".modal-title").innerHTML = "Gainesville Service Request - " + f.request_type;
-              r_modal_element.querySelector(".modal-p").innerHTML = if_desc;
-
-              request_modal.show();
-            } else {
               this.openPopup();
-            }
             },
             mouseout: function(e) {
               this.closePopup();
@@ -198,7 +164,12 @@ document.addEventListener("DOMContentLoaded", function() {
     document.querySelector('#sidebar-container').classList.toggle('sidebar-left-pos');
   });
 
-  setTimeout(toggle_sidebar, 1900);
+  // Attribution for detecting if user on mobile: Timothy Huang (https://dev.to/timhuang/a-simple-way-to-detect-if-browser-is-on-a-mobile-device-with-javascript-44j3)
+  if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+    console.log('On mobile.');
+  } else {
+    setTimeout(toggle_sidebar, 1900);
+  }
 
   // For about modal toggle
   document.querySelector('#about-toggle-btn').addEventListener('click', function(e) {

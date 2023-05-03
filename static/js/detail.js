@@ -1,4 +1,3 @@
-var about_modal = new bootstrap.Modal(document.getElementById("about-modal"), {});
 var request_modal = new bootstrap.Modal(document.getElementById("request-modal"), {});
 
 var map = L.map("map", {
@@ -14,12 +13,6 @@ var tiles = L.tileLayer("http://{s}.tile.osm.org/{z}/{x}/{y}.png", {
   preferCanvas: true,
 }).addTo(map);
 
-var bounds = L.latLngBounds();
-
-var markerClusters = L.markerClusterGroup({
-  maxClusterRadius: 45
-}).addTo(map);
-
 // Attribution: KooiInc on stackoverflow (https://stackoverflow.com/questions/1199352/smart-way-to-truncate-long-strings)
 function truncate_string(str, n) {
   return (str.length > n) ? str.slice(0, n - 1) + '&hellip;' : str;
@@ -28,83 +21,6 @@ function truncate_string(str, n) {
 function format_datetime(attribute) {
   return dateFormat(attribute, "dddd, mmmm dS, yyyy") + "<br>" + dateFormat(attribute, "h:MM TT")
 }
-
-fetch("static/data/markers.geojson")
-  .then((response) => response.json())
-  .then((geojsonData) => {
-
-    var geojsonLayer = L.geoJson(geojsonData, {
-      pointToLayer: function(feature, latlng) {
-        bounds.extend(latlng);
-
-        var f = feature.properties;
-        var r_modal_element = document.querySelector('#request-modal');
-
-        var desc_truncated = (f.description && f.description !== 'None') ? truncate_string(f.description, 285) : "<em>No description reported.</em>";
-
-        // Attribution for detecting if user on mobile: Timothy Huang (https://dev.to/timhuang/a-simple-way-to-detect-if-browser-is-on-a-mobile-device-with-javascript-44j3)
-        if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-          var tooltip_click_msg = "";
-        } else {
-          var tooltip_click_msg = "<hr style='margin: 5px 0;'><em>Click marker for more details...</em>";
-        }
-
-        var tooltip_content = "<strong>Type:</strong> " + f.request_type + "<br><strong>Date:</strong> " + dateFormat(f.request_date, "fullDate") + "<br><hr style='margin: 5px 0;'>" + desc_truncated + tooltip_click_msg;
-
-        var m = L.marker(latlng)
-          .bindPopup(tooltip_content)
-          .on({
-            click: function(e) {
-              var if_address = (f.address) ? f.address : "";
-              var if_reporter_display = (f.reporter_display) ? f.reporter_display : "";
-              var if_closed = (f.closed) ? format_datetime(f.closed) : "";
-              var if_status = (f.status) ? f.status : "";
-              var if_assigned_to = (f.assigned_to) ? f.assigned_to : "";
-              var if_desc = (f.description && f.description !== 'None') ? f.description : "<em>No description reported.</em>";
-              // var sharable_link = '{{ url_for('detail') }}' + f.ID;
-
-              // Days-Minutes to Close
-              if (f.minutes_to_close && f.days_to_close) {
-                var days = (f.days_to_close == 1) ? f.days_to_close + " Day" : f.days_to_close + " Days";
-                var minutes = (f.minutes_to_close == 1) ? f.minutes_to_close + " Minute" : f.minutes_to_close + " Minutes";
-              } else {
-                var days = '';
-                var months = '';
-              }
-
-              var if_time_closed = (f.minutes_to_close && f.days_to_close) ? "<tr><th>Days / Minutes to Close</th><td>" + days + " / " + minutes + "</td></tr>" : "";
-
-              // Date Acknowledged
-              var if_ack = (f.acknowledged) ? format_datetime(f.acknowledged) : "";
-
-              var table_content = "<table class='table table-striped table-bordered table-condensed'>" + "<tr><th>ID</th><td>" + f.id + "</td></tr>" + "<tr><th>Request Type</th><td>" + f.request_type + "</td></tr>" + "<tr><th>Reporter Display Name</th><td>" + if_reporter_display + "</td></tr>" + "<tr><th>Address</th><td>" + if_address + "</td></tr>" + "<tr><th>Latitude</th><td>" + feature.geometry.coordinates[1].toString() + "</td></tr>" + "<tr><th>Longitude</th><td>" + feature.geometry.coordinates[0].toString() + "</td></tr>" + "<tr><th>Date Reported</th><td>" + dateFormat(f.request_date, "fullDate") + "</td></tr>" + "<tr><th>Date Acknowledged</th><td>" + if_ack + "</td></tr>" + "<tr><th>Assigned To</th><td>" + if_assigned_to + "</td></tr>" + "<tr><th>Last Updated</th><td>" + format_datetime(f.last_updated) + "</td></tr>" + "<tr><th>Status</th><td>" + if_status + "</td></tr>" + "<tr><th>Date Closed</th><td>" + if_closed + "</td></tr>" + if_time_closed + "</table>";
-
-              $('#request-modal').find('.modal-table').html(table_content); // I use jQuery here to just quickly format table_content string to html. I already have to load jQuery to load parts of Bootstrap anyway
-
-              r_modal_element.querySelector(".modal-title").innerHTML = "Gainesville Service Request - " + f.request_type;
-              r_modal_element.querySelector(".modal-p").innerHTML = if_desc;
-
-              request_modal.show();
-            },
-            mouseover: function(e) {
-              this.openPopup();
-            },
-            mouseout: function(e) {
-              this.closePopup();
-            },
-          });
-
-        return markerClusters.addLayer(m);
-      }
-    }).addTo(map);
-
-    if (bounds.length > 0) {
-      map.fitBounds(bounds, {
-        padding: [65, 65]
-      });
-    }
-
-  });
 
 // Attribution: David Thomas on stackoverflow (https://stackoverflow.com/questions/19480385/css-hover-can-it-effect-multiple-divs-with-same-class-name)
 function classToggle(evt, parent, child, toggle) {

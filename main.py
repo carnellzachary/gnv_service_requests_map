@@ -127,5 +127,27 @@ def filter():
         hed = '<h1>Something is broken.</h1>'
         return hed + error_text
 
+# Detail page
+@app.route('/request/<num>')
+def detail(num):
+    try:
+        complaint = db.session.execute(db.select(Service_Request)
+            .where(Service_Request.id == num)).scalars()
+
+        for c in complaint:
+            if c.id:
+                lat = float(c.lat)
+                lng = float(c.lng)
+                cleaned_marker_desc = "  ".join(str(c.description).split())
+                props = {"id":c.id, "status":c.status, "request_type":c.request_type, "description":cleaned_marker_desc, "request_date":c.request_date, "last_updated":c.last_updated, "acknowledged":c.acknowledged, "closed":c.closed, "minutes_to_close":c.minutes_to_close, "days_to_close":c.days_to_close, "assigned_to":c.assigned_to, "reporter_display":c.reporter_display, "address":c.address}
+                title = c.request_type + ' - Gainesville Service Request'
+
+        return render_template('detail.html', the_lat=lat, the_lng=lng, props=props, the_title=title)
+    except Exception as e:
+        # e holds description of the error
+        error_text = "<p>The error:<br>" + str(e) + "</p>"
+        hed = '<h1>Something is broken.</h1>'
+        return hed + error_text
+
 if __name__ == '__main__':
     app.run(debug=True)

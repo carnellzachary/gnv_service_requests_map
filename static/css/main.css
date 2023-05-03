@@ -15,7 +15,7 @@ html,body {
   right: 0;
   margin: auto;
   padding: 5px;
-  background: rgb(6 81 213 / 70%);
+  background: rgb(13 45 101 / 89%);
   box-shadow: 0 2px 5px rgba(0,0,0,0.7);
   border-radius: 0 0 10px 10px;
   border: 1px solid #000;
@@ -26,7 +26,6 @@ html,body {
 
 #welcome-banner h5 {
   font-weight: bold;
-
   letter-spacing: 1px;
   color: #0eec67;
   text-shadow: #000 0 0 10px;
@@ -34,9 +33,9 @@ html,body {
 }
 
 #welcome-banner p {
-  font-weight: bold;
-  text-shadow: #FFF 1px 0 3px;
-  color: #000;
+  font-weight: 600;
+  text-shadow: #000 1px 0 3px;
+  color: #fcfcfc;
   margin: 0.3rem;
 }
 

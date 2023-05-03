@@ -104,8 +104,8 @@ fetch("static/data/markers.geojson")
 
               // Setting sharable link url
               var getUrl = window.location;
-              var baseUrl = getUrl .protocol + "//" + getUrl.host + "/" + getUrl.pathname.split('/')[1];
-              document.querySelector('#copy-link-input').value = baseUrl + "requests/" + f.id;
+              var formattedUrl = getUrl.protocol + "//" + getUrl.host + "/" + "requests/" + f.id;
+              document.querySelector('#copy-link-input').value = formattedUrl;
 
               request_modal.show();
             },

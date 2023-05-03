@@ -128,7 +128,7 @@ def filter():
         return hed + error_text
 
 # Detail page
-@app.route('/request/<num>')
+@app.route('/requests/<num>')
 def detail(num):
     try:
         complaint = db.session.execute(db.select(Service_Request)

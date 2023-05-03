@@ -1,4 +1,17 @@
+// Bootstrap Modals
+var about_modal = new bootstrap.Modal(document.getElementById("about-modal"), {});
 var request_modal = new bootstrap.Modal(document.getElementById("request-modal"), {});
+
+// Share button at bottom request modal
+function copyComplaintLink() {
+  var copyLink = document.getElementById("copy-link-input");
+  copyLink.select();
+  copyLink.setSelectionRange(0, 99999);
+  navigator.clipboard.writeText(copyLink.value);
+
+  $("#copy-link-notif").show();
+  $("#copy-link-notif").fadeOut(2000);
+}
 
 var map = L.map("map", {
   zoomControl: false
@@ -73,14 +86,7 @@ document.addEventListener("DOMContentLoaded", function() {
     document.querySelector('#sidebar-toggle-btn').classList.toggle('sidebar-button-left-pos');
     document.querySelector('#sidebar-container').classList.toggle('sidebar-left-pos');
   });
-
-  // Attribution for detecting if user on mobile: Timothy Huang (https://dev.to/timhuang/a-simple-way-to-detect-if-browser-is-on-a-mobile-device-with-javascript-44j3)
-  if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-    console.log('On mobile.');
-  } else {
-    setTimeout(toggle_sidebar, 1900);
-  }
-
+  
   // For about modal toggle
   document.querySelector('#about-toggle-btn').addEventListener('click', function(e) {
     about_modal.show();

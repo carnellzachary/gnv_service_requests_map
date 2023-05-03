@@ -1,5 +1,22 @@
+// Bootstrap Modals
 var about_modal = new bootstrap.Modal(document.getElementById("about-modal"), {});
 var request_modal = new bootstrap.Modal(document.getElementById("request-modal"), {});
+
+// Tooltip for copy link button
+var tooltipTriggerList = [].slice.call(document.querySelectorAll('#copy-link-btn[data-bs-toggle="tooltip"]'));
+  var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+    return new bootstrap.Tooltip(tooltipTriggerEl, {
+      trigger: 'click'
+    })
+  });
+
+// Share button at bottom request modal
+function copyComplaintLink() {
+  var copyLink = document.getElementById("copy-link-input");
+  copyLink.select();
+  copyLink.setSelectionRange(0, 99999);
+  navigator.clipboard.writeText(copyLink.value);
+}
 
 var map = L.map("map", {
   zoomControl: false
@@ -79,10 +96,16 @@ fetch("static/data/markers.geojson")
 
               var table_content = "<table class='table table-striped table-bordered table-condensed'>" + "<tr><th>ID</th><td>" + f.id + "</td></tr>" + "<tr><th>Request Type</th><td>" + f.request_type + "</td></tr>" + "<tr><th>Reporter Display Name</th><td>" + if_reporter_display + "</td></tr>" + "<tr><th>Address</th><td>" + if_address + "</td></tr>" + "<tr><th>Latitude</th><td>" + feature.geometry.coordinates[1].toString() + "</td></tr>" + "<tr><th>Longitude</th><td>" + feature.geometry.coordinates[0].toString() + "</td></tr>" + "<tr><th>Date Reported</th><td>" + dateFormat(f.request_date, "fullDate") + "</td></tr>" + "<tr><th>Date Acknowledged</th><td>" + if_ack + "</td></tr>" + "<tr><th>Assigned To</th><td>" + if_assigned_to + "</td></tr>" + "<tr><th>Last Updated</th><td>" + format_datetime(f.last_updated) + "</td></tr>" + "<tr><th>Status</th><td>" + if_status + "</td></tr>" + "<tr><th>Date Closed</th><td>" + if_closed + "</td></tr>" + if_time_closed + "</table>";
 
+              // Adding table of complaint data
               $('#request-modal').find('.modal-table').html(table_content); // I use jQuery here to just quickly format table_content string to html. I already have to load jQuery to load parts of Bootstrap anyway
 
               r_modal_element.querySelector(".modal-title").innerHTML = "Gainesville Service Request - " + f.request_type;
               r_modal_element.querySelector(".modal-p").innerHTML = if_desc;
+
+              // Setting sharable link url
+              var getUrl = window.location;
+              var baseUrl = getUrl .protocol + "//" + getUrl.host + "/" + getUrl.pathname.split('/')[1];
+              document.querySelector('#copy-link-input').value = baseUrl + "requests/" + f.id;
 
               request_modal.show();
             },

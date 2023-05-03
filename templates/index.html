@@ -476,6 +476,11 @@
 					<p class="modal-p"></p>
 				</div>
 				<div class="modal-footer">
+					<button id="copy-link-btn" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="Link copied!" onclick="copyComplaintLink();">
+            <i class="fa fa-share-square fa-lg" aria-hidden="true"></i>
+          </button>
+					<input type="text" value="0" id="copy-link-input">
+          <span id="copy-link-notif" style="display: none;">Link copied!</span>
 					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
 				</div>
 			</div>

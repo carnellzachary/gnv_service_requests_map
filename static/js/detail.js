@@ -2,15 +2,20 @@
 var about_modal = new bootstrap.Modal(document.getElementById("about-modal"), {});
 var request_modal = new bootstrap.Modal(document.getElementById("request-modal"), {});
 
+// Tooltip for copy link button
+var tooltipTriggerList = [].slice.call(document.querySelectorAll('#copy-link-btn[data-bs-toggle="tooltip"]'));
+  var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+    return new bootstrap.Tooltip(tooltipTriggerEl, {
+      trigger: 'click'
+    })
+  });
+
 // Share button at bottom request modal
 function copyComplaintLink() {
   var copyLink = document.getElementById("copy-link-input");
   copyLink.select();
   copyLink.setSelectionRange(0, 99999);
   navigator.clipboard.writeText(copyLink.value);
-
-  $("#copy-link-notif").show();
-  $("#copy-link-notif").fadeOut(2000);
 }
 
 var map = L.map("map", {
@@ -86,7 +91,7 @@ document.addEventListener("DOMContentLoaded", function() {
     document.querySelector('#sidebar-toggle-btn').classList.toggle('sidebar-button-left-pos');
     document.querySelector('#sidebar-container').classList.toggle('sidebar-left-pos');
   });
-  
+
   // For about modal toggle
   document.querySelector('#about-toggle-btn').addEventListener('click', function(e) {
     about_modal.show();

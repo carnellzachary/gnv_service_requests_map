@@ -46,7 +46,7 @@ function format_datetime(attribute) {
   return dateFormat(attribute, "dddd, mmmm dS, yyyy") + "<br>" + dateFormat(attribute, "h:MM TT")
 }
 
-fetch("static/data/default_markers.geojson")
+fetch("static/data/markers.geojson")
   .then((response) => response.json())
   .then((geojsonData) => {
 
